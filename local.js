@@ -1,8 +1,8 @@
 require('dotenv').config();
 
 const ENDPOINT = process.env.ENDPOINT
-const BATCH_SIZE = parseInt(process.env.BATCH_SIZE, 10) || 5000;
-const CONCURRENCY_LIMIT = parseInt(process.env.CONCURRENCY_LIMIT, 10) || 2000;
+const BATCH_SIZE = parseInt(process.env.BATCH_SIZE, 10) || 500;
+const CONCURRENCY_LIMIT = parseInt(process.env.CONCURRENCY_LIMIT, 10) || 250;
 const RETRY_LIMIT = parseInt(process.env.RETRY_LIMIT, 10) || 3;
 const LOG_LEVEL = process.env.LOG_LEVEL || 'info';
 const GRAFITI_SEARCH = process.env.GRAFITI_SEARCH || 'dappnode'

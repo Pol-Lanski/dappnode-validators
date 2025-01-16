@@ -1,7 +1,6 @@
 name: Daily Ingestion
 
 on:
-  # This will run the workflow every day at 06:00 UTC
   schedule:
     - cron: "0 6 * * *"
   # Allow manual triggering too (optional)
@@ -26,12 +25,8 @@ jobs:
       - name: Run ingestion script
         run: node local.js
         env:
-          # The script needs these environment variables:
           MONGO_URI: ${{ secrets.MONGO_URI }}
           MONGO_DBNAME: ${{ secrets.MONGO_DBNAME }}
           ENDPOINT: ${{ secrets.ENDPOINT }}
           KEY: ${{ secrets.KEY }}
-          BATCH_SIZE: ${{ secrets.BATCH_SIZE }}
-          CONCURRENCY_LIMIT: ${{ secrets.CONCURRENCY_LIMIT }}
-          RETRY_LIMIT: ${{ secrets.RETRY_LIMIT }}
           GRAFITI_SEARCH: "dappnode"
