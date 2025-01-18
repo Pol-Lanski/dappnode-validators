@@ -3,7 +3,7 @@ name: Recheck validators
 on:
   # This will run the workflow every day at 06:00 UTC
   schedule:
-    - cron: "0 6 * * *"
+    - cron: "0 */4 * * *"
   # Allow manual triggering too (optional)
   workflow_dispatch:
 
