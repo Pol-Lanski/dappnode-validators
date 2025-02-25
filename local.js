@@ -6,7 +6,7 @@ const CONCURRENCY_LIMIT = parseInt(process.env.CONCURRENCY_LIMIT, 10) || 250;
 const RETRY_LIMIT = parseInt(process.env.RETRY_LIMIT, 10) || 3;
 const LOG_LEVEL = process.env.LOG_LEVEL || 'info';
 const GRAFITI_SEARCH = process.env.GRAFITI_SEARCH || 'dappnode'
-const KEY = process.env.KEY 
+const KEY = process.env.KEY
 const fetch = (...args) => import('node-fetch').then(({ default: f }) => f(...args));
 const winston = require('winston');
 const { MongoClient } = require('mongodb');
@@ -158,6 +158,9 @@ async function runFinalStep(currentHeadSlot) {
         validator_index: { $in: uniqueProposers },
         withdrawal_address: { $ne: '' }
     });
+
+    const allActiveValidators = await validatorsColl.countDocuments({ last_known_status: 'active_ongoing' });
+
     const uniqueOperatorsCount = addresses.length;
     logger.info(
         `Unique operators (parsed ETH1 addresses) among ${GRAFITI_SEARCH} proposers: ${uniqueOperatorsCount}`
@@ -178,7 +181,7 @@ async function runFinalStep(currentHeadSlot) {
     });
 
     logger.info(
-        `Final step done. Stats at slot=${currentHeadSlot}: ${GRAFITI_SEARCH}_validator_proposers=${uniqueProposers.length}, newly_active_ongoing=${activeCount}, unique_operators=${uniqueOperatorsCount}`
+        `Final step done. Stats at slot=${currentHeadSlot}: ${GRAFITI_SEARCH}_validator_proposers=${uniqueProposers.length}, newly_active_ongoing=${activeCount}, unique_operators=${uniqueOperatorsCount}, all active validators count=${allActiveValidators}`
     );
 }
 
@@ -196,7 +199,7 @@ async function checkValidatorsInParallel(validatorIndices, currentHeadSlot) {
     return new Promise(resolve => {
         const next = async () => {
             if (index >= total) {
-               
+
                 if (inFlight === 0) resolve(results);
                 return;
             }
@@ -397,7 +400,7 @@ async function processBatchSlots(slotArray) {
                 const blockData = await fetchBlockWithRetry(slot);
                 if (blockData) {
                     const { graffiti, proposerIndex } = extractGraffitiAndProposer(blockData);
-                   // since we are ingesting all blocks, we can query them later for any specific graffiti
+                    // since we are ingesting all blocks, we can query them later for any specific graffiti
                     await insertBlock(slot, proposerIndex || null, graffiti || '');
                 }
             } catch (err) {
